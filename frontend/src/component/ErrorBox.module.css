@@ -1,0 +1,23 @@
+.errorBox {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    width: 600px;
+    padding: 20px;
+    background-color: rgb(255, 69, 69);
+    transform: translate(-50%, 0);
+    border-radius: 30px;
+    opacity: 1;
+    transition: opacity 0.2s ease-out;
+    z-index: 999;
+}
+
+.msg {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.fadeout {
+    transition: opacity 0.5s ease-out;
+    opacity: 0;
+}

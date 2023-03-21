@@ -1,0 +1,74 @@
+ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  list-style-type: none;
+  padding: 0px;
+}
+
+li {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+button[type="submit"] {
+  background-color: dodgerblue;
+  width: 340px;
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px;
+  margin-top: 20px;
+  margin-bottom: 5px;
+  transition: all 0.3s ease-in-out;
+}
+
+button[type="submit"]:hover {
+  background-color: rgb(9, 96, 182);
+  cursor: pointer;
+}
+
+.mainbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 700px;
+  height: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: #343541;
+  /* background-color: #e8e8e8; */
+  transform: translate(-50%, -50%);
+}
+
+.forgetpasswd {
+  position: relative;
+  width: 340px;
+  float: left;
+  color: rgb(12, 116, 220);
+  text-align: left;
+  top: -15px;
+  text-decoration: none;
+}
+
+.forgetpasswd:hover {
+  text-decoration: underline;
+}
+
+.signup {
+  color: rgb(12, 116, 220);
+  text-decoration: none;
+}
+
+.signup:hover {
+  text-decoration: underline;
+}
+
+.text {
+  color: rgb(199, 199, 199);
+}

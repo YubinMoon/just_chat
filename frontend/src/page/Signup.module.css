@@ -1,0 +1,65 @@
+ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    list-style-type: none;
+    padding: 0px;
+}
+
+li {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+button[type="submit"] {
+    background-color: dodgerblue;
+    width: 340px;
+    color: #fff;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 12px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    transition: all 0.3s ease-in-out;
+}
+
+button[type="submit"]:hover {
+    background-color: rgb(9, 96, 182);
+    cursor: pointer;
+}
+
+.mainbox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 500px;
+    height: 600px;
+    margin-top: -300px; /* height의 절반값을 빼줌 */
+    margin-left: -250px; /* width의 절반값을 빼줌 */
+    background-color: #343541;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+  
+
+.policy{
+    color: #c9c9c9;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+input[type=checkbox] {
+    position: relative;
+    left: 0;
+    top: 2px;
+    width: 16px;
+    height: 16px;
+    margin: 0px 5px 0px 0px;
+    background-color: white;
+}

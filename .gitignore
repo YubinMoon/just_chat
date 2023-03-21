@@ -1,0 +1,10 @@
+venv
+*.db
+.idea
+*.pyc
+__pycache__
+migrations
+alembic.ini
+.env
+*log
+.deta
