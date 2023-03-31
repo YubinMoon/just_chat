@@ -7,7 +7,7 @@ export default function Line({ type = "text", exp, state, onChange, onBlur = nul
                 <label className={styles.label} htmlFor={exp}>{exp}</label>
                 <span className={styles.required}>*</span>
             </div>
-            <input className={styles.inputbox} type={type} id={exp} value={state} placeholder={hint} onChange={onChange} onBlur={onBlur} />
+            <input autoComplete='off' className={styles.inputbox} type={type} id={exp} value={state} placeholder={hint} onChange={onChange} onBlur={onBlur} />
         </>
     )
 }

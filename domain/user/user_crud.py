@@ -26,6 +26,7 @@ async def get_existing_user(db: Session, user_create: UserCreate):
     return result.scalars().all()
 
 
-async def get_user(db: Session, username: str):
+async def get_user(db: Session, username: str) -> User:
     result = await db.execute(select(User).filter(User.username == username))
     return result.scalar_one_or_none()
+

@@ -5,13 +5,13 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
     let content_type = 'application/json'
     let body = JSON.stringify(params)
 
-    if(operation === 'login') {
+    if (operation === 'login') {
         method = 'post'
         content_type = 'application/x-www-form-urlencoded'
         body = qs.stringify(params)
     }
 
-    let _url = process.env.REACT_APP_API_SERVER_URL+url
+    let _url = process.env.REACT_APP_API_SERVER_URL + url
     if (method === 'get') {
         _url += "?" + new URLSearchParams(params)
     }
@@ -23,14 +23,19 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
         }
     }
 
+    const _access_token = localStorage.getItem('login-token')
+    if (_access_token) {
+        options.headers["Authorization"] = "Bearer " + _access_token
+    }
+
     if (method !== 'get') {
         options['body'] = body
     }
 
     fetch(_url, options)
         .then(response => {
-            if(response.status === 204) {  // No content
-                if(success_callback) {
+            if (response.status === 204) {  // No content
+                if (success_callback) {
                     success_callback()
                 }
                 return

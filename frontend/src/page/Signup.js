@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Link, useResolvedPath } from 'react-router-dom'
 import fastapi from '../lib/api'
 import styles from './Signup.module.css'
 import Line from '../component/Line'
 import ErrorBox from '../component/ErrorBox'
+import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
     const [errorMessage, setErrorMessage] = useState("")
@@ -13,10 +13,11 @@ export default function Signup() {
     const [name, setName] = useState("")
     const [nameHint, setNameHint] = useState("")
     const [check, setCheck] = useState(false)
+    const navigate = useNavigate()
 
     function handleError(error) {
         if (!errorMessage) {
-            setErrorMessage(error.message);
+            setErrorMessage(error);
             setTimeout(() => {
                 setErrorMessage('');
             }, 2000);
@@ -38,9 +39,18 @@ export default function Signup() {
             nickname: name ? name : nameHint,
         }
         if (check) {
-            console.debug(params)
-            fastapi('post','/api/user/create',params,() => console.debug("success"),error=>console.debug(error))
+            fastapi(
+                'post',
+                '/api/user/create',
+                params,
+                () => {
+                    console.debug("success")
+                    alert("회원가입 성공!")
+                    navigate("/")
+                },
+                error => handleError(error))
         } else {
+            handleError("checkbox")
             console.debug("checkbox")
         }
     }
@@ -75,7 +85,7 @@ export default function Signup() {
                     </ul>
                 </form>
             </div>
-            {errorMessage && <ErrorBox message={errorMessage} />}
+            <ErrorBox error={errorMessage} />
         </>
     )
 }

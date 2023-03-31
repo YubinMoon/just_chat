@@ -44,6 +44,7 @@ button[type="submit"]:hover {
   background-color: #343541;
   /* background-color: #e8e8e8; */
   transform: translate(-50%, -50%);
+  z-index: 1;
 }
 
 .forgetpasswd {

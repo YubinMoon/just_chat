@@ -12,6 +12,8 @@ from database import get_async_db
 from domain.user import user_crud, user_schema
 from domain.user.user_crud import pwd_context
 
+from models import User
+
 config = Config('.env')
 ACCESS_TOKEN_EXPIRE_MINUTES = int(config('ACCESS_TOKEN_EXPIRE_MINUTES'))
 SECRET_KEY = config('SECRET_KEY')
@@ -26,7 +28,6 @@ router = APIRouter(
 @router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
 async def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_async_db)):
     user = await user_crud.get_existing_user(db, user_create=_user_create)
-    print('user', user)
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail="이미 존재하는 사용자입니다.")
@@ -79,3 +80,18 @@ async def get_current_user(token: str = Depends(oauth2_scheme),
         if user is None:
             raise credentials_exception
         return user
+
+@router.get("/refresh", response_model=user_schema.Token)
+async def refresh_new_access_token(current_user: User = Depends(get_current_user)):
+    # make access token
+    data = {
+        "sub": current_user.username,
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    }
+    access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "username": current_user.username
+    }

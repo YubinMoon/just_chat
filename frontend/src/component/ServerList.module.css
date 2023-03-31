@@ -1,0 +1,43 @@
+.serverlist {
+    position: relative;
+    display: block;
+    background-color: #1E1F22;
+    height: 100%;
+    padding-top: 12px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.serverlist::-webkit-scrollbar {
+    display: none;
+}
+
+.itemBox {
+    position: relative;
+    margin: 0 0 8px;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    width: 72px;
+}
+
+.btn {
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    position: relative;
+    color:white;
+    width: 48px;
+    height: 48px;
+    background-color: #3c3e44;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: border-radius 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.btn:hover {
+    border-radius: 30%;
+    background-color: #647fd2;
+}

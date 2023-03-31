@@ -1,0 +1,88 @@
+.pannel {
+    position: relative;
+    height: 100%;
+    width: 240px;
+    background-color: #343541;
+}
+
+.servername {
+    color: white;
+    padding: 12px 16px;
+    font-weight: 500;
+    height: 24;
+}
+
+.newchattextbox {
+    margin: 10px;
+    border-radius: 5px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(137, 137, 137);
+    cursor: pointer;
+}
+
+.newchattext {
+    color: white;
+    text-align: left;
+    font-weight: 500;
+    padding: 10px;
+}
+
+.hiddencontent {
+    height: 0px;
+    transition: all 0.4s ease;
+    position: relative;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+.visible {
+    height: 110px;
+    top: 0;
+}
+
+.form {
+    margin: 10px;
+}
+
+input {
+    position: relative;
+    width: 180px;
+    padding: 12px;
+    margin: 0;
+    border-radius: 10px;
+    color: white;
+    font-size: 20px;
+    background-color: #1E1F22;
+    outline: none;
+    border: 0;
+}
+
+.label {
+    color: white;
+    position: relative;
+    display: flex;
+    padding: 10px;
+}
+
+.channelbox {
+    margin: 20px;
+    border-width: 0px;
+    border-top-width: 1px;
+    border-color: white;
+    border-style: solid;
+}
+
+.channel {
+    color: white;
+    text-align: left;
+    font-size: 18px;
+    margin: 0px 5px;
+    padding: 10px;
+    border-width: 0px;
+    border-bottom-width: 1px;
+    border-color: white;
+    border-style: dashed;
+    cursor: pointer;
+}

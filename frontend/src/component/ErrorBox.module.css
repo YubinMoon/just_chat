@@ -1,5 +1,7 @@
 .errorBox {
-    position: absolute;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
     top: 50px;
     left: 50%;
     width: 600px;
@@ -13,11 +15,11 @@
 }
 
 .msg {
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 16px;
 }
 
 .fadeout {
-    transition: opacity 0.5s ease-out;
+    transition: opacity 0.3s ease-out;
     opacity: 0;
+    pointer-events: none;
 }

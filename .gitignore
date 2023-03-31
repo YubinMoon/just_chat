@@ -1,6 +1,6 @@
 venv
 *.db
-.idea
+.idea*
 *.pyc
 __pycache__
 migrations
