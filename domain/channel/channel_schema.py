@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from enum import Enum
-from pydantic import BaseModel
 
 
 class ChannelType(str, Enum):
@@ -8,15 +7,18 @@ class ChannelType(str, Enum):
     gpt = "gpt"
     voice = "voice"
 
-
-class ChannelCreate(BaseModel):
+class BasicChannel(BaseModel):
     name: str
     description: str = ""
+
+class BaseChannel(BasicChannel):
     type: ChannelType = ChannelType.text
+
+class ChannelCreate(BaseChannel):
     server_id: int
 
 
-class Channel(BaseModel):
+class ChannelInfo(BaseChannel):
     id: int
     type: str
     name: str

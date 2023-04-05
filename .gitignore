@@ -8,3 +8,4 @@ alembic.ini
 .env
 *log
 .deta
+app

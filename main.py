@@ -4,6 +4,7 @@ from starlette.middleware.cors import CORSMiddleware
 from domain.user import user_router
 from domain.server import server_router
 from domain.channel import channel_router
+from domain.message import message_router
 
 app = FastAPI()
 
@@ -22,3 +23,4 @@ app.add_middleware(
 app.include_router(user_router.router)
 app.include_router(server_router.router)
 app.include_router(channel_router.router)
+app.include_router(message_router.router)

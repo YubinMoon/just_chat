@@ -1,23 +1,25 @@
 from pydantic import BaseModel
 
-from domain.channel.channel_schema import Channel
+from domain.channel.channel_schema import ChannelInfo
 
 
-class Server(BaseModel):
+class BaseServer(BaseModel):
+    name: str = ""
+    description: str = ""
+
+
+class ServerDetail(BaseServer):
     id: int
-    name: str
-    description: str
-    channel_list: list[Channel] = []  # 채널 리스트를 포함
+    channel_list: list[ChannelInfo] = []  # 채널 리스트를 포함
 
     class Config:
         orm_mode = True
 
 
-class ServerCreate(BaseModel):
-    name: str
-    description: str = ""
-
-
 class ServerList(BaseModel):
     total: int
-    server_list: list[Server]
+    server_list: list[ServerDetail]
+
+
+class ServerUpdate(BaseServer):
+    id: int

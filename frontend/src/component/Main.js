@@ -4,8 +4,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import styles from './Main.module.css'
 import fastapi from '../lib/api'
 import ServerList from './ServerList'
-import ServerMain from './ServerMain';
 import ChatArea from './ChatArea';
+import Pannel from './Pannel';
 
 
 export default function Main() {
@@ -30,7 +30,7 @@ export default function Main() {
     return (
         <div className={styles.body}>
             <ServerList servers={servers} />
-            {s ? <ServerMain server={s} /> : ""}
+            {s ? <Pannel server={s} /> : ""}
             {c ? <ChatArea channel={c} /> : ""}
         </div>
     )
