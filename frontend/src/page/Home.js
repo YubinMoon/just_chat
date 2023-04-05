@@ -11,7 +11,7 @@ export default function Home() {
     
     useEffect(() => {
         fastapi(
-            "get",
+            "post",
             "/api/user/refresh",
             {},
             e => {

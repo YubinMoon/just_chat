@@ -25,8 +25,8 @@ export default function Main() {
     }, [])
     console.debug("server: " + server)
     console.debug("channel: " + channel)
-    const s = servers.find(e => e.id == server)
-    const c = channels.find(e => e.id == channel)
+    const s = servers.find(e => e.id === Number(server))
+    const c = channels.find(e => e.id === Number(channel))
     return (
         <div className={styles.body}>
             <ServerList servers={servers} />

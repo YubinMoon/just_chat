@@ -10,7 +10,7 @@ export default function ChatArea({ channel }) {
     console.log(channel)
     return (
         <div className={styles.mainbox}>
-
+            asdfasdf
         </div>
     )
 }

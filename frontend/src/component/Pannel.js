@@ -8,7 +8,7 @@ function ChannelLine({ server, channel }) {
     const navigate = useNavigate()
     return (
         <div className={styles.channel} onClick={() => {
-            navigate("/"+server.id+"/"+channel.id)
+            navigate("/" + server.id + "/" + channel.id)
         }}>
             {channel.name}
         </div>
