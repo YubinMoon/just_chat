@@ -9,7 +9,7 @@ from starlette import status
 from database import get_async_db
 from domain.channel import channel_crud, channel_schema
 from domain.server.server_crud import get_server_list, get_server_by_id
-from domain.user.user_crud import get_user_from_token
+from domain.user.user_crud import get_user_from_token, get_user_list
 from domain.user.user_crud import credentials_exception
 
 from models import User
@@ -46,12 +46,12 @@ async def channel_create(
 
 
 @router.get(
-    "/{channel_id}",
+    "/get/{channel_id}",
     response_model=channel_schema.ChannelInfo,
     summary="get channel"
 )
 async def channel_get(
-    channel_id=Query(title="channel id"),
+    channel_id: int = Query(title="channel id"),
     db: AsyncSession = Depends(get_async_db),
     _user: User = Depends(get_user_from_token),
 ):
@@ -64,6 +64,21 @@ async def channel_get(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return channel
+
+
+@router.get(
+    "/list",
+    response_model=list[channel_schema.ChannelInfo],
+    summary="get users channels list"
+)
+async def user_channel_list(
+    db: AsyncSession = Depends(get_async_db),
+    # _user:User=Depends(get_user_from_token),
+):
+    _user = await get_user_list(db=db, offset=0, limit=10)
+    _user = _user[0]
+    channels = await channel_crud.get_channel_list_by_user(db=db, user=_user)
+    return channels
 
 
 @router.put(

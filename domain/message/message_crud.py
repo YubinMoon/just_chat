@@ -1,10 +1,14 @@
 from typing import Union
+from fastapi import WebSocket, WebSocketDisconnect
 from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 from domain.message.message_schema import MessageGet, BaseMessage
 from models import User, Server, ServerUser, Channel, Message
 from datetime import datetime
+from domain.channel.channel_crud import get_channel_by_id, get_channel_list_by_user
+from websocket import manager
+from pydantic import ValidationError
 
 
 async def create_message(db: AsyncSession, data: BaseMessage, user: User) -> None:
@@ -39,7 +43,23 @@ async def update_message(db: AsyncSession, message: Message, data: BaseMessage) 
         message.content = data.content
     await db.commit()
 
-async def delete_message(db:AsyncSession, message:Message)->None:
-    print("asdf")
+
+async def delete_message(db: AsyncSession, message: Message) -> None:
     await db.delete(message)
     await db.commit()
+
+
+async def message_socket(db: AsyncSession, websocket: WebSocket, user: User) -> None:
+    await manager.connect(db=db, user=user, websocket=websocket)
+    try:
+        while True:
+            data = await websocket.receive_json()
+            try:
+                message = BaseMessage(**data).dict()
+                await manager.broadcast(user=user, message=message)
+            except ValidationError as e:
+                # 오류 메시지와 함께 검증 오류 처리
+                await websocket.send_text(f"Error: {str(e)}")
+
+    except WebSocketDisconnect:
+        manager.disconnect(user=user, websocket=websocket)

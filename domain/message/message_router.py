@@ -12,8 +12,8 @@ from database import get_async_db
 
 from domain.message import message_crud, message_schema
 
-from domain.server.server_crud import get_server_list, get_server_by_user_channel
-from domain.channel.channel_crud import get_channel_by_id
+from domain.server.server_crud import get_server_list
+from domain.channel.channel_crud import get_channel_by_id, get_channel_list_by_user
 from domain.user.user_crud import get_user_from_token, credentials_exception
 
 from models import User
@@ -36,9 +36,9 @@ async def message_create(
     db: AsyncSession = Depends(get_async_db),
     _user: User = Depends(get_user_from_token)
 ):
-    channel = await get_channel_by_id(db=db, channel_id=_msg_data.channel_id)
-    server = await get_server_by_user_channel(db=db, user=_user, channel=channel)
-    if not server:
+    channel_list = await get_channel_list_by_user(db=db, user=_user)
+    channel_id_list = [c.id for c in channel_list]
+    if _msg_data.channel_id not in channel_id_list:
         raise credentials_exception
     if _msg_data.content_type == message_schema.ContentType.text:
         await message_crud.create_message(db=db, data=_msg_data, user=_user)
@@ -56,10 +56,11 @@ async def get_messages(
     db: AsyncSession = Depends(get_async_db),
     _user: User = Depends(get_user_from_token)
 ):
-    channel = await get_channel_by_id(db=db, channel_id=channel_id)
-    server = await get_server_by_user_channel(db=db, user=_user, channel=channel)
-    if not server:
+    channel_list = await get_channel_list_by_user(db=db, user=_user)
+    channel_id_list = [c.id for c in channel_list]
+    if channel_id not in channel_id_list:
         raise credentials_exception
+    channel = channel_list[channel_id_list.index(channel_id)]
     message_list = await message_crud.get_message_list(
         db=db,
         offset=offset,
@@ -112,6 +113,8 @@ async def delete_message(
 async def websocket(
     websocket: WebSocket,
     db: AsyncSession = Depends(get_async_db),
-    _user: User = Depends(get_user_from_token),
+    # _user: User = Depends(get_user_from_token)
+    token: str = Query(title="user token")
 ):
-    pass
+    _user = await get_user_from_token(token=token, db=db)
+    await message_crud.message_socket(db=db, websocket=websocket, user=_user)

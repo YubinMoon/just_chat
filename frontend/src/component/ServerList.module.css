@@ -1,11 +1,7 @@
 .serverlist {
-    position: relative;
-    display: block;
     background-color: #1E1F22;
-    height: 100%;
     padding-top: 12px;
     overflow-y: scroll;
-    overflow-x: hidden;
 }
 
 .serverlist::-webkit-scrollbar {

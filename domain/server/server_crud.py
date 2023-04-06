@@ -40,7 +40,7 @@ async def get_server_by_user_channel(db: AsyncSession, user: User, channel: Chan
         return None
 
 
-async def get_server_list(db: AsyncSession, user: User) -> list[ServerDetail]:
+async def get_server_list(db: AsyncSession, user: User) -> list[Server]:
     stmt_server = select(ServerUser).options(
         selectinload(ServerUser.server).
         selectinload(Server.channel_list)

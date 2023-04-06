@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from domain.channel.channel_schema import ChannelCreate, BasicChannel
 from models import User, Server, ServerUser, Channel
 from datetime import datetime
-
+from database import get_async_db
 config = Config('.env')
 
 
@@ -25,11 +25,22 @@ async def get_channel_by_id(db: AsyncSession, channel_id: int) -> Union[Channel,
     return channel
 
 
+async def get_channel_list_by_user(db: AsyncSession = Depends(get_async_db), user: User = None) -> list[Channel]:
+    if not user:
+        return []
+    stmt = select(Channel).join(Server).join(
+        ServerUser).join(User).where(User.id == user.id)
+    result = await db.execute(stmt)
+    channel_list = result.scalars().all()
+    return channel_list
+
+
 async def update_channel(db: AsyncSession, channel: Channel, _data: BasicChannel) -> None:
     for key, value in _data.dict(exclude_defaults=True).items():
         setattr(channel, key, value)
     await db.commit()
 
-async def delete_channel(db:AsyncSession, channel:Channel) -> None:
+
+async def delete_channel(db: AsyncSession, channel: Channel) -> None:
     await db.delete(channel)
     await db.commit()

@@ -29,8 +29,10 @@ export default function Main() {
     const c = channels.find(e => e.id === Number(channel))
     return (
         <div className={styles.body}>
-            <ServerList servers={servers} />
-            {s ? <Pannel server={s} /> : ""}
+            <div className={styles.sidepannel}>
+                <ServerList servers={servers} />
+                {s ? <Pannel server={s} /> : ""}
+            </div>
             {c ? <ChatArea channel={c} /> : ""}
         </div>
     )
