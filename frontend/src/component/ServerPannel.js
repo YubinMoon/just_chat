@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import fastapi from '../lib/api'
 import styles from './ServerList.module.css'
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useRoutes, useParams } from 'react-router-dom';
+import useStore from '../lib/store';
 
 function ServerBox({ children }) {
     return (
@@ -11,9 +12,9 @@ function ServerBox({ children }) {
     )
 }
 
-export default function ServerList({ servers }) {
+export default function ServerList() {
+    const { serverList } = useStore(state => state)
     const navigate = useNavigate()
-
     return (
         <>
             <div className={styles.serverlist}>
@@ -25,7 +26,7 @@ export default function ServerList({ servers }) {
                     </div>
                 </ServerBox>
                 <ServerBox />
-                {servers.map(e => (
+                {serverList.map(e => (
                     <ServerBox key={e.id} name={e.name}>
                         <div>
                             {e && <div className={styles.btn} onClick={() => {
@@ -37,6 +38,6 @@ export default function ServerList({ servers }) {
                     </ServerBox>
                 ))}
             </div>
-            </>
+        </>
     )
 }

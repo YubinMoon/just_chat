@@ -67,17 +67,20 @@ async def channel_get(
 
 
 @router.get(
-    "/list",
+    "/list/{server_id}",
     response_model=list[channel_schema.ChannelInfo],
     summary="get users channels list"
 )
-async def user_channel_list(
+async def channel_list(
+    server_id=Path(title="server id"),
     db: AsyncSession = Depends(get_async_db),
-    # _user:User=Depends(get_user_from_token),
+    _user: User = Depends(get_user_from_token),
 ):
-    _user = await get_user_list(db=db, offset=0, limit=10)
-    _user = _user[0]
-    channels = await channel_crud.get_channel_list_by_user(db=db, user=_user)
+    server = await get_server_by_id(db=db, server_id=server_id)
+    server_list = await get_server_list(db=db, user=_user)
+    if server not in server_list:
+        return credentials_exception
+    channels = await channel_crud.get_channel_list_by_server(db=db, server=server)
     return channels
 
 

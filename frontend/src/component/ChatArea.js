@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Outlet, json, useNavigate } from 'react-router-dom';
+import { Outlet, json, useNavigate, useParams } from 'react-router-dom';
 import styles from './ChatArea.module.css'
 import fastapi from '../lib/api'
 import ErrorBox, { handleError, errorMessage } from './ErrorBox';
+import useStore from '../lib/store';
+import useWebSocketStore from '../lib/websocketStore';
 
 function MessageLine({ message }) {
     return (
@@ -24,55 +26,56 @@ function MessageLine({ message }) {
     )
 }
 
-export default function ChatArea({ channel }) {
+export default function ChatArea() {
+    const { handleMessage, sendMessage, disconnect } = useWebSocketStore()
+    const { serverList, channelList, currentServer } = useStore()
+    const { server, channel } = useParams()
     const [messages, setMessages] = useState([])
     const [inputValue, setInputValue] = useState('');
     const messagesRef = useRef(null);
     const socketRef = useRef(null);
     const token = localStorage.getItem('login-token')
 
-    useEffect(() => {
-        socketRef.current = new WebSocket(process.env.REACT_APP_WS_SERVER_URL + `/api/message/ws?token=${token}`);
-
-        socketRef.current.addEventListener('open', (event) => {
-            console.log('WebSocket connection established');
-        });
-
-        socketRef.current.addEventListener('message', (event) => {
-            const message = event.data;
-
-            // const message = JSON.parse(event.data);
-            console.log(JSON.parse(message))
-            // setMessages((prevMessages) => [...prevMessages, message]);
-        });
-
-        return () => {
-            console.log("socket close")
-            socketRef.current.close();
-        };
-    }, []);
+    const insertMessage = (message) => {
+        setMessages(premessages => {
+            if (premessages.some((msg) => msg.id === message.id)) {
+                // 이미 동일한 ID를 가진 객체가 있으면 추가하지 않음
+                console.log('Duplicate ID detected. Object not added.');
+                return;
+            }
+            const updateMessages = [...premessages, message]
+            updateMessages.sort((a, b) => a.id - b.id);
+            setMessages(updateMessages)
+        })
+    }
 
     useEffect(() => {
-        fastapi(
-            "get",
-            "/api/message/list",
-            {
-                channel_id: channel.id,
-                offset: 0,
-                limit: 100
-            },
-            e => {
+        const params = {
+            channel_id: channel,
+            offset: 0,
+            limit: 1000
+        }
+        fastapi("get", "/api/message/list", params)
+            .then(e => {
                 console.debug(e)
                 setMessages(e.message_list)
-            },
-            e => console.log(e)
-        )
+            })
+            .catch(
+                e => console.log(e)
+            )
         setInputValue('');
     }, [channel])
 
     useEffect(() => {
         messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }, [messages])
+
+    useEffect(() => {
+        const msg = handleMessage.message
+        if (msg) {
+            setMessages(premsg => [...premsg, msg])
+        }
+    }, [handleMessage])
 
     function handleInputChange(event) {
         setInputValue(event.target.value);
@@ -82,34 +85,22 @@ export default function ChatArea({ channel }) {
         if (event.keyCode === 13 && !event.shiftKey) {
             event.preventDefault();
             const data = {
-                channel_id: channel.id,
-                content_type: "text",
-                content: inputValue
+                text_message: {
+                    channel_id: channel,
+                    content_type: "text",
+                    content: inputValue
+                }
             }
-            if (socketRef.current.readyState === WebSocket.OPEN) { // WebSocket 연결 상태 확인
-                socketRef.current.send(JSON.stringify(data));
-            }
-            // fastapi(
-            //     "post",
-            //     "/api/message/create",
-            //     {
-            //         channel_id: channel.id,
-            //         content_type: "text",
-            //         content: inputValue
-            //     },
-            //     () => {
-            //         console.debug("send message")
-            //     },
-            //     e => console.debug(e)
-            // )
+            sendMessage(data)
             setInputValue('');
         }
     }
-
     return (
         <div className={styles.mainbox}>
             <div className={styles.chatline} ref={messagesRef}>
-                {messages.map(msg => <MessageLine key={msg.id} message={msg} />)}
+                <div className={styles.chatbox}>
+                    {messages.map(msg => <MessageLine key={msg.id} message={msg} />)}
+                </div>
             </div>
             <form className={styles.inputbox1}>
                 <div className={styles.inputbox2}>

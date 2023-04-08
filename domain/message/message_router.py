@@ -3,6 +3,7 @@ from datetime import timedelta, datetime
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi import Depends, Query, Path, Body
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from pydantic import ValidationError, parse_obj_as
 from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -16,6 +17,7 @@ from domain.server.server_crud import get_server_list
 from domain.channel.channel_crud import get_channel_by_id, get_channel_list_by_user
 from domain.user.user_crud import get_user_from_token, credentials_exception
 
+from domain.websocket.chat_websocket import manager
 from models import User
 
 config = Config('.env')
@@ -113,9 +115,14 @@ async def delete_message(
 async def websocket(
     websocket: WebSocket,
     db: AsyncSession = Depends(get_async_db),
-    # _user: User = Depends(get_user_from_token)
     token: str = Query(title="user token"),
-    
 ):
     _user = await get_user_from_token(token=token, db=db)
-    await message_crud.message_socket(db=db, websocket=websocket, user=_user)
+    await manager.connect(db=db, user=_user, websocket=websocket)
+    try:
+        while True:
+            data = await websocket.receive_json()
+            await manager.processing(data=data, user=_user, websocket=websocket)
+
+    except WebSocketDisconnect:
+        manager.disconnect(user=_user, websocket=websocket)

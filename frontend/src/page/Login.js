@@ -27,17 +27,15 @@ export default function Login() {
             password: passwd
         }
         console.debug(params)
-        fastapi(
-            "login",
-            "/api/user/login",
-            params,
-            token => {
+        fastapi("login", "/api/user/login", params,)
+            .then((token) => {
                 console.log(token)
-                localStorage.setItem('login-token',token.access_token)
+                localStorage.setItem('login-token', token.access_token)
                 navigate("/")
-            },
-            error => handleError(error)
-        )
+            })
+            .catch((error) => {
+                handleError(error)
+            })
     }
     return (
         <div>

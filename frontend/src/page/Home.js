@@ -8,22 +8,19 @@ import Main from '../component/Main'
 export default function Home() {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
-    
+
     useEffect(() => {
-        fastapi(
-            "post",
-            "/api/user/refresh",
-            {},
-            e => {
+        fastapi("post", "/api/user/refresh", {})
+            .then((e) => {
                 console.debug("refresh")
                 console.debug(e)
                 setLoading(false)
-            },
-            e => {
+            })
+            .catch((e) => {
                 console.debug(e)
                 navigate("/login")
-            }
-        )
+
+            })
     }, [])
     if (loading) {
         return <Loading />

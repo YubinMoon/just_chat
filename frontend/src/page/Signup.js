@@ -39,16 +39,13 @@ export default function Signup() {
             nickname: name ? name : nameHint,
         }
         if (check) {
-            fastapi(
-                'post',
-                '/api/user/create',
-                params,
-                () => {
+            fastapi('post', '/api/user/create', params)
+                .then(() => {
                     console.debug("success")
                     alert("회원가입 성공!")
                     navigate("/")
-                },
-                error => handleError(error))
+                })
+                .catch(error => handleError(error))
         } else {
             handleError("checkbox")
             console.debug("checkbox")

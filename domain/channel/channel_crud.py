@@ -25,6 +25,13 @@ async def get_channel_by_id(db: AsyncSession, channel_id: int) -> Union[Channel,
     return channel
 
 
+async def get_channel_list_by_server(db: AsyncSession, server: Server) -> list[Channel]:
+    stmt = select(Channel).where(Channel.server_id == server.id)
+    result = await db.execute(stmt)
+    channel_list = result.scalars().all()
+    return channel_list
+
+
 async def get_channel_list_by_user(db: AsyncSession = Depends(get_async_db), user: User = None) -> list[Channel]:
     if not user:
         return []
@@ -47,6 +54,6 @@ async def delete_channel(db: AsyncSession, channel: Channel) -> None:
     result = await db.execute(stmt)
     channel = result.scalar_one_or_none()
     if not channel:
-        return 
+        return
     await db.delete(channel)
     await db.commit()

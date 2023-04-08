@@ -4,8 +4,14 @@ import Home from './page/Home'
 import Login from './page/Login'
 import Signup from './page/Signup'
 import Line from './component/Line';
+import useWebSocketStore from './lib/websocketStore';
+import { useEffect } from 'react';
 
 function App() {
+  const { connect } = useWebSocketStore()
+  useEffect(() => {
+    connect()
+  },[])
   return (
     <BrowserRouter>
       <div className={styles.App}>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import styles from './Pannel.module.css'
 import fastapi from '../lib/api'
 import ErrorBox, { handleError, errorMessage } from './ErrorBox';
-
+import useStore from '../lib/store';
 function ChannelLine({ server, channel }) {
     const navigate = useNavigate()
     return (
@@ -15,7 +15,8 @@ function ChannelLine({ server, channel }) {
     )
 }
 
-function NewChannel({ server_id }) {
+function NewChannel() {
+    const { currentServer, getNewChannelList } = useStore()
     const [errorMessage, setErrorMessage] = useState("")
     const [isHovered, setIsHovered] = useState(false)
     const [newName, setNewName] = useState("")
@@ -38,23 +39,24 @@ function NewChannel({ server_id }) {
     };
 
     const createChannel = () => {
-        fastapi(
-            "post",
-            "/api/channel/create",
-            {
-                name: newName,
-                description: "",
-                type: "text",
-                server_id: server_id
-            },
-            () => {
-                console.debug("create channel")
-                setNewName("")
-            },
-            error => handleError(error)
-        )
+        const params =
+        {
+            name: newName,
+            description: "",
+            type: "text",
+            server_id: currentServer.id
+        }
+        fastapi("post", "/api/channel/create", params)
+            .then(
+                () => {
+                    console.debug("create channel")
+                    setNewName("")
+                    getNewChannelList(currentServer.id)
+                })
+            .catch(
+                error => handleError(error)
+            )
     }
-
 
     return (
         <div
@@ -86,17 +88,23 @@ function NewChannel({ server_id }) {
 }
 
 
-export default function Pannel({ server }) {
+export default function Pannel() {
+    const { serverList, channelList, currentServer, getNewChannelList, getCurrentServer } = useStore()
+    const { server, channel } = useParams()
+    useEffect(() => {
+        getCurrentServer(server)
+        getNewChannelList(server)
+    }, [server])
     return (
         <div className={styles.pannel}>
 
             <div className={styles.servername}>
-                {server.name}
+                {currentServer.name}
             </div>
-            <NewChannel server_id={server.id} />
+            <NewChannel />
             <div className={styles.channelbox}>
-                {server.channel_list.map(channel =>
-                    <ChannelLine key={channel.id} server={server} channel={channel} />
+                {channelList.map(channel =>
+                    <ChannelLine key={channel.id} server={currentServer} channel={channel} />
                 )}
             </div>
         </div>
