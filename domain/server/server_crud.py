@@ -28,18 +28,6 @@ async def get_server_by_id(db: AsyncSession, server_id: int) -> Union[Server, No
     server = result.scalar_one_or_none()
     return server
 
-
-async def get_server_by_user_channel(db: AsyncSession, user: User, channel: Channel) -> Union[Server, None]:
-    try:
-        stmt = select(Server).join(User).join(Channel).where(
-            User.id == user.id).where(Channel.id == channel.id)
-        result = await db.execute(stmt)
-        server = result.scalar_one_or_none()
-        return server
-    except AttributeError:
-        return None
-
-
 async def get_server_list(db: AsyncSession, user: User) -> list[Server]:
     stmt_server = select(ServerUser).options(
         selectinload(ServerUser.server).

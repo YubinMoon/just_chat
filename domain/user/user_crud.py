@@ -52,6 +52,7 @@ async def get_user_list(db: AsyncSession, offset: int, limit: int) -> list[User]
 
 
 async def get_user_from_name(db: AsyncSession, username: str) -> Union[User, None]:
+    print(username)
     stmt = select(User).where(User.username == username)
     result = await db.execute(stmt)
     return result.scalar_one_or_none()

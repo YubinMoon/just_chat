@@ -114,7 +114,8 @@ async def websocket(
     websocket: WebSocket,
     db: AsyncSession = Depends(get_async_db),
     # _user: User = Depends(get_user_from_token)
-    token: str = Query(title="user token")
+    token: str = Query(title="user token"),
+    
 ):
     _user = await get_user_from_token(token=token, db=db)
     await message_crud.message_socket(db=db, websocket=websocket, user=_user)

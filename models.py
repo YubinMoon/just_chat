@@ -36,11 +36,14 @@ class Channel(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     server_id = Column(Integer, ForeignKey(
-        'server.id', ondelete="CASCADE"), nullable=False)
+        'server.id', ondelete="CASCADE"))
     server = relationship("Server", backref="channel_list")
     type = Column(String, nullable=False)
     name = Column(String, nullable=False)
     description = Column(Text)
+    
+# 'cascade' 옵션을 추가하고 'backref'를 설정하십시오.
+    messages = relationship("Message", back_populates="channel", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"Channel(id={self.id!r}, server={self.server_id!r}, name={self.name!r}, type={self.type!r})"
@@ -52,7 +55,8 @@ class Message(Base):
     id = Column(Integer, primary_key=True)
     channel_id = Column(Integer, ForeignKey(
         'channel.id', ondelete="CASCADE"), nullable=False)
-    channel = relationship("Channel", backref="message_list")
+    # 'back_populates'를 추가하십시오.
+    channel = relationship("Channel", back_populates="messages")
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship("User", backref="message_list")
     content_type = Column(String, nullable=False, default='text')

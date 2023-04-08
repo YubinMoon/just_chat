@@ -42,5 +42,11 @@ async def update_channel(db: AsyncSession, channel: Channel, _data: BasicChannel
 
 
 async def delete_channel(db: AsyncSession, channel: Channel) -> None:
+    print("asdfasdf\n")
+    stmt = select(Channel).where(Channel.id == channel.id)
+    result = await db.execute(stmt)
+    channel = result.scalar_one_or_none()
+    if not channel:
+        return 
     await db.delete(channel)
     await db.commit()

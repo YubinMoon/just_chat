@@ -1,8 +1,8 @@
 from fastapi import WebSocket, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from models import User, Channel
+from models import User, Channel, Message
 from domain.channel.channel_crud import get_channel_list_by_user
-
+from domain.message.message_schema import BaseMessage,UserMessage
 
 class ConnectionManager:
     def __init__(self):
@@ -23,14 +23,17 @@ class ConnectionManager:
         print(f"{user.nickname} is connected")
 
     def disconnect(self, user: User, websocket: WebSocket):
-        for channel_id in self.users[user.id]:
-            del self.channels[channel_id]
-        del self.users[user.id]
-        print(f"{user.nickname} is disconnected")
+        try:
+            for channel_id in self.users[user.id]:
+                del self.channels[channel_id]
+            del self.users[user.id]
+            print(f"{user.nickname} is disconnected")
+        except KeyError:
+            print(f"disconnect Error: {user.id}")
 
-    async def broadcast(self, user: User, message: str):
-        for user_id, websocket in self.channels[user.id].items():
-            await websocket.send_json(message)
+    async def broadcast(self, db: AsyncSession, user: User, message: UserMessage):
+        for user_id, websocket in self.channels[message.channel_id].items():
+            await websocket.send_text(message.json())
 
 
 manager = ConnectionManager()

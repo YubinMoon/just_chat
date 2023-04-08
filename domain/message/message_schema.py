@@ -5,7 +5,6 @@ from datetime import datetime
 from domain.user.user_schema import UserInfo,BaseUser
 
 
-
 class ContentType(str, Enum):
     text = "text"
     img = "img"
@@ -20,7 +19,7 @@ class BaseMessage(BaseModel):
     content: Union[str, bytes]
     
 
-class Message(BaseModel):
+class UserMessage(BaseModel):
     id: int
     channel_id: int
     user: BaseUser
@@ -32,10 +31,9 @@ class Message(BaseModel):
     class Config:
         orm_mode = True
 
-
 class MessageList(BaseModel):
     total: int
-    message_list: list[Message]
+    message_list: list[UserMessage]
 
 
 class MessageGet(BaseModel):
