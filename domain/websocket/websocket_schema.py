@@ -4,12 +4,19 @@ from pydantic import BaseModel, validator
 from datetime import datetime
 from domain.server.server_schema import ServerList
 from domain.message.message_schema import ContentType, MessageGet, BaseMessage, UserMessage
+from domain.channel.channel_schema import ChannelCreate, ChannelInfo
 
 
 class ChannelConfigType(str, Enum):
     create = "create"
     delete = "delete"
     modify = "modify"
+
+
+class Status(str, Enum):
+    getMessage = "getMessage"
+    delChannel = "delChannel"
+    newChannel = "newChannel"
 
 
 class TextMessage(BaseModel):
@@ -20,8 +27,9 @@ class TextMessage(BaseModel):
 
 class ChannelConfig(BaseModel):
     setting_type: ChannelConfigType
-    channel_id: int
-    detail: str = None
+    server_id: int
+    channel_id: int = None
+    detail: Union[ChannelCreate, str] = None
 
 
 class InputData(BaseModel):
@@ -30,7 +38,9 @@ class InputData(BaseModel):
 
 
 class ResMessage(BaseModel):
-    message: UserMessage
+    status: Status = Status.getMessage
+    message: UserMessage = None
+    channel: ChannelInfo = None
 
 
 class ErrorMessage(BaseModel):

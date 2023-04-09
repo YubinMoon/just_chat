@@ -38,6 +38,10 @@ const store = (set, get) => ({
             set({ socket: null })
         }
     },
+    reconnect: () => {
+        get().disconnect()
+        get().connect()
+    },
     sendMessage: (data) => {
         if (get().socket && get().socket.readyState === WebSocket.OPEN) {
             get().socket.send(JSON.stringify(data));

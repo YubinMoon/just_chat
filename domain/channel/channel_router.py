@@ -80,7 +80,7 @@ async def channel_list(
     server_list = await get_server_list(db=db, user=_user)
     if server not in server_list:
         return credentials_exception
-    channels = await channel_crud.get_channel_list_by_server(db=db, server=server)
+    channels = await channel_crud.get_channel_by_server(db=db, server=server)
     return channels
 
 

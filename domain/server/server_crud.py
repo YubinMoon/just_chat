@@ -28,6 +28,12 @@ async def get_server_by_id(db: AsyncSession, server_id: int) -> Union[Server, No
     server = result.scalar_one_or_none()
     return server
 
+async def get_server_by_channel_id(db:AsyncSession,channel_id:int)->Union[Server,None]:
+    stmt = select(Server).join(Channel).where(Channel.id == channel_id)
+    result = await db.execute(stmt)
+    server = result.scalar_one_or_none()
+    return server
+
 async def get_server_list(db: AsyncSession, user: User) -> list[Server]:
     stmt_server = select(ServerUser).options(
         selectinload(ServerUser.server).

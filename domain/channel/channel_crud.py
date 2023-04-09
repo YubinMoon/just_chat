@@ -11,11 +11,12 @@ from database import get_async_db
 config = Config('.env')
 
 
-async def create_channel(db: AsyncSession, channel_create: ChannelCreate, server: Server) -> None:
+async def create_channel(db: AsyncSession, channel_create: ChannelCreate, server: Server) -> Channel:
     db_channel = Channel(name=channel_create.name, type=channel_create.type,
                          description=channel_create.description, server=server)
     db.add(db_channel)
     await db.commit()
+    return db_channel
 
 
 async def get_channel_by_id(db: AsyncSession, channel_id: int) -> Union[Channel, None]:
@@ -25,14 +26,14 @@ async def get_channel_by_id(db: AsyncSession, channel_id: int) -> Union[Channel,
     return channel
 
 
-async def get_channel_list_by_server(db: AsyncSession, server: Server) -> list[Channel]:
+async def get_channel_by_server(db: AsyncSession, server: Server) -> list[Channel]:
     stmt = select(Channel).where(Channel.server_id == server.id)
     result = await db.execute(stmt)
     channel_list = result.scalars().all()
     return channel_list
 
 
-async def get_channel_list_by_user(db: AsyncSession = Depends(get_async_db), user: User = None) -> list[Channel]:
+async def get_channel_by_user(db: AsyncSession = Depends(get_async_db), user: User = None) -> list[Channel]:
     if not user:
         return []
     stmt = select(Channel).join(Server).join(
@@ -49,7 +50,6 @@ async def update_channel(db: AsyncSession, channel: Channel, _data: BasicChannel
 
 
 async def delete_channel(db: AsyncSession, channel: Channel) -> None:
-    print("asdfasdf\n")
     stmt = select(Channel).where(Channel.id == channel.id)
     result = await db.execute(stmt)
     channel = result.scalar_one_or_none()

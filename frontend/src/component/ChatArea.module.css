@@ -34,8 +34,7 @@
     background-clip: padding-box;
     border-radius: 8px;
 }
-.chatbox{
-}
+
 .messageline {
     position: relative;
 }
@@ -101,7 +100,7 @@
     color: white;
     font-size: 20px;
     overflow-y: hidden;
-    border: none; 
+    border: none;
     resize: none;
-    outline: none; 
+    outline: none;
 }

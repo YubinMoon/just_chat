@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import fastapi from '../lib/api'
-import styles from './ServerList.module.css'
+import styles from './ServerPannel.module.css'
 import { Outlet, useNavigate, useRoutes, useParams } from 'react-router-dom';
 import useStore from '../lib/store';
 

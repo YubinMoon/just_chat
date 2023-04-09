@@ -7,6 +7,7 @@ import useStore from '../lib/store';
 import useWebSocketStore from '../lib/websocketStore';
 
 function MessageLine({ message }) {
+
     return (
         <div className={styles.messageline}>
             <div className={styles.messagebox}>
@@ -36,17 +37,21 @@ export default function ChatArea() {
     const socketRef = useRef(null);
     const token = localStorage.getItem('login-token')
 
-    const insertMessage = (message) => {
-        setMessages(premessages => {
-            if (premessages.some((msg) => msg.id === message.id)) {
-                // 이미 동일한 ID를 가진 객체가 있으면 추가하지 않음
-                console.log('Duplicate ID detected. Object not added.');
-                return;
+    const sortByCreateDate = (list) => {
+        return list.sort((a, b) => {
+            // 'create_date' 속성을 Date 객체로 변환
+            const dateA = new Date(a.create_date);
+            const dateB = new Date(b.create_date);
+
+            // 날짜를 비교하여 정렬
+            if (dateA < dateB) {
+                return -1;
+            } else if (dateA > dateB) {
+                return 1;
+            } else {
+                return 0;
             }
-            const updateMessages = [...premessages, message]
-            updateMessages.sort((a, b) => a.id - b.id);
-            setMessages(updateMessages)
-        })
+        });
     }
 
     useEffect(() => {
@@ -57,8 +62,8 @@ export default function ChatArea() {
         }
         fastapi("get", "/api/message/list", params)
             .then(e => {
-                console.debug(e)
-                setMessages(e.message_list)
+                const list = sortByCreateDate(e.message_list)
+                setMessages(list)
             })
             .catch(
                 e => console.log(e)
@@ -71,9 +76,16 @@ export default function ChatArea() {
     }, [messages])
 
     useEffect(() => {
-        const msg = handleMessage.message
-        if (msg) {
-            setMessages(premsg => [...premsg, msg])
+        const status = handleMessage.status
+        if (status) {
+            if (status.endsWith("Message")) {
+                const msg = handleMessage.message
+                if (msg.channel_id === Number(channel)) {
+                    const list = sortByCreateDate([...messages, msg])
+                    setMessages(list)
+                    console.log(msg.id)
+                }
+            }
         }
     }, [handleMessage])
 

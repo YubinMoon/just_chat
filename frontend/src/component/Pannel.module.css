@@ -1,5 +1,8 @@
 .pannel {
+    display: flex;
+    flex-direction: column;
     background-color: #343541;
+    width: 250px;
 }
 
 .servername {
@@ -64,6 +67,15 @@ input {
 }
 
 .channelbox {
+    flex: 1 0 0%;
+    overflow-y: scroll;
+}
+
+.channelbox::-webkit-scrollbar {
+    display: none;
+}
+
+.channelscroll {
     margin: 20px;
     border-width: 0px;
     border-top-width: 1px;
@@ -72,9 +84,6 @@ input {
 }
 
 .channel {
-    color: white;
-    text-align: left;
-    font-size: 18px;
     margin: 0px 5px;
     padding: 10px;
     border-width: 0px;
@@ -82,4 +91,34 @@ input {
     border-color: white;
     border-style: dashed;
     cursor: pointer;
+}
+
+.channelname {
+    position: relative;
+    display: flex;
+}
+
+.text {
+    color: white;
+    text-align: left;
+    font-size: 18px;
+}
+
+.btnbox {
+    display: flex;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.btn {
+    display: flex;
+    border: 0;
+    background-color: transparent;
+    color: white;
+    padding: 0;
+}
+
+.icon {
+    padding: 3px;
 }

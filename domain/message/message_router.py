@@ -14,7 +14,7 @@ from database import get_async_db
 from domain.message import message_crud, message_schema
 
 from domain.server.server_crud import get_server_list
-from domain.channel.channel_crud import get_channel_by_id, get_channel_list_by_user
+from domain.channel.channel_crud import get_channel_by_id, get_channel_by_user
 from domain.user.user_crud import get_user_from_token, credentials_exception
 
 from domain.websocket.chat_websocket import manager
@@ -38,7 +38,7 @@ async def message_create(
     db: AsyncSession = Depends(get_async_db),
     _user: User = Depends(get_user_from_token)
 ):
-    channel_list = await get_channel_list_by_user(db=db, user=_user)
+    channel_list = await get_channel_by_user(db=db, user=_user)
     channel_id_list = [c.id for c in channel_list]
     if _msg_data.channel_id not in channel_id_list:
         raise credentials_exception
@@ -58,7 +58,7 @@ async def get_messages(
     db: AsyncSession = Depends(get_async_db),
     _user: User = Depends(get_user_from_token)
 ):
-    channel_list = await get_channel_list_by_user(db=db, user=_user)
+    channel_list = await get_channel_by_user(db=db, user=_user)
     channel_id_list = [c.id for c in channel_list]
     if channel_id not in channel_id_list:
         raise credentials_exception
@@ -117,12 +117,16 @@ async def websocket(
     db: AsyncSession = Depends(get_async_db),
     token: str = Query(title="user token"),
 ):
-    _user = await get_user_from_token(token=token, db=db)
-    await manager.connect(db=db, user=_user, websocket=websocket)
     try:
-        while True:
-            data = await websocket.receive_json()
-            await manager.processing(data=data, user=_user, websocket=websocket)
+        await websocket.accept()
+        _user = await get_user_from_token(token=token, db=db)
+        await manager.connect(db=db, user=_user, websocket=websocket)
+        try:
+            while True:
+                data = await websocket.receive_json()
+                await manager.processing(data=data, user=_user, websocket=websocket)
 
-    except WebSocketDisconnect:
-        manager.disconnect(user=_user, websocket=websocket)
+        except WebSocketDisconnect:
+            manager.disconnect(user=_user, websocket=websocket)
+    except HTTPException as e:
+        websocket.send_json({"detail":e.detail})

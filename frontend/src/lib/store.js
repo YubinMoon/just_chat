@@ -18,6 +18,7 @@ const store = (set) => ({
         try {
             const response = await fastapi("get", "/api/channel/list/" + server_id, {});
             set({ channelList: response });
+            return response
         } catch (e) {
             console.debug(e);
         }
