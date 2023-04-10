@@ -8,19 +8,27 @@ import Main from '../component/Main'
 export default function Home() {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
+    const checkLogin = async () => {
+        try {
+            const token = await fastapi("post", "/api/user/refresh", {});
+            console.debug("reload token");
+            console.debug(token)
+            localStorage.setItem('login-token', token.access_token)
+            setLoading(false);
+        } catch (e) {
+            console.debug(e.message);
+            if (e.message === 'Failed to fetch') {
+                console.log("Server is not responding")
+                setTimeout(checkLogin, 3000)
+            } else {
+                console.debug("need login")
+                navigate("/login");
+            }
+        }
+    }
 
     useEffect(() => {
-        fastapi("post", "/api/user/refresh", {})
-            .then((e) => {
-                console.debug("refresh")
-                console.debug(e)
-                setLoading(false)
-            })
-            .catch((e) => {
-                console.debug(e)
-                navigate("/login")
-
-            })
+        checkLogin()
     }, [])
     if (loading) {
         return <Loading />

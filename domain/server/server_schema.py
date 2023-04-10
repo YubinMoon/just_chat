@@ -23,3 +23,6 @@ class ServerList(BaseModel):
 
 class ServerUpdate(BaseServer):
     id: int
+
+class InviteToken(BaseModel):
+    invite_token: str

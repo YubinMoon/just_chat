@@ -3,15 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './page/Home'
 import Login from './page/Login'
 import Signup from './page/Signup'
+import Invite from './page/Invite';
 import Line from './component/Line';
-import useWebSocketStore from './lib/websocketStore';
 import { useEffect } from 'react';
 
 function App() {
-  const { connect } = useWebSocketStore()
-  useEffect(() => {
-    connect()
-  },[])
   return (
     <BrowserRouter>
       <div className={styles.App}>
@@ -23,6 +19,7 @@ function App() {
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/invite/:token" element={<Invite />} />
         </Routes>
       </div>
     </BrowserRouter>

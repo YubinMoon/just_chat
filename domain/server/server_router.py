@@ -8,8 +8,8 @@ from starlette import status
 
 from database import get_async_db
 from domain.server import server_crud, server_schema
-from domain.user.user_crud import get_user_from_token
-from domain.user.user_crud import credentials_exception
+from domain.user.user_crud import get_user_from_token, credentials_exception
+from domain.user.user_schema import Token
 
 from models import User
 
@@ -18,6 +18,44 @@ router = APIRouter(
     prefix="/api/server",
     tags=["Server"]
 )
+
+
+@router.get(
+    "/invite/create/{server_id}",
+    response_model=server_schema.InviteToken,
+    summary="create server invite token"
+)
+async def create_invite_token(
+    server_id: int = Path(title="server id"),
+    db: AsyncSession = Depends(get_async_db),
+    _user: User = Depends(get_user_from_token)
+):
+    _server = await server_crud.get_server_by_id(db=db, server_id=server_id)
+    if not _server or _user.id != _server.user_id:
+        raise credentials_exception
+    invite_token = await server_crud.create_invite_token(server_id=server_id)
+    return {"invite_token": invite_token}
+
+
+@router.post(
+    "/invite/join/{invite_token}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="join server from token"
+)
+async def join_server(
+    invite_token: str = Path(title="invite token"),
+    db: AsyncSession = Depends(get_async_db),
+    _user: User = Depends(get_user_from_token)
+):
+    server_id = await server_crud.verify_invite_token(invite_token)
+    server_list = await server_crud.get_server_list(db=db, user=_user)
+    server_id_list = [server.id for server in server_list]
+    if server_id in server_id_list:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="서버가 이미 존재합니다.",
+        )
+    await server_crud.insert_user(db=db, user=_user, server_id=server_id)
 
 
 @router.post(

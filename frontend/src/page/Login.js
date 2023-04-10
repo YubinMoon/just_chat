@@ -5,7 +5,7 @@ import styles from './Login.module.css'
 import Line from '../component/Line'
 import ErrorBox from '../component/ErrorBox';
 
-export default function Login() {
+export default function Login({ prehref }) {
     const [errorMessage, setErrorMessage] = useState("")
     const [userId, setUserId] = useState("")
     const [passwd, setPasswd] = useState("")

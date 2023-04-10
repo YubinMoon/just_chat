@@ -20,7 +20,9 @@ function MessageLine({ message }) {
                     </span>
                 </h3>
                 <div className={styles.content}>
-                    {message.content}
+                    <span className={styles.messagetext}>
+                        {message.content}
+                    </span>
                 </div>
             </div>
         </div>

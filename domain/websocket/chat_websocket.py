@@ -92,7 +92,6 @@ class ConnectionManager:
             error = Error(error=ErrorMessage(detail="데이터 포멧 에러"))
             await websocket.send_text(error.json())
         except ParamsError as e:
-            print(e)
             error = Error(error=ErrorMessage(detail=str(e)))
             await websocket.send_text(error.json())
 

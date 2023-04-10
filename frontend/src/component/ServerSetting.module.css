@@ -1,0 +1,42 @@
+.pannel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+}
+
+.list {
+    margin: 0px 20px;
+    background-color: rgb(30, 30, 30);
+    align-items: start;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.btn {
+    background-color: transparent;
+    border: 0;
+    width: 100%;
+    padding: 0;
+}
+
+
+.settingbox {
+    position: relative;
+    display: flex;
+    padding: 5px 15px;
+    border-radius: 3px;
+}
+
+.settingbox:hover {
+    background-color: #444654;
+}
+
+.settingtext {
+    color: white;
+    font-size: 16px;
+}
+
+.back {
+    background-color: #444654;
+}

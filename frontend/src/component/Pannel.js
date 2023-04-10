@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import styles from './Pannel.module.css'
 import fastapi from '../lib/api'
 import ErrorBox, { handleError, errorMessage } from './ErrorBox';
+import ServerSetting from './ServerSetting';
 import useStore from '../lib/store';
 import useWebSocketStore from '../lib/websocketStore';
 
@@ -170,6 +171,7 @@ export default function Pannel() {
     const { serverList, channelList, currentServer, getNewChannelList, getCurrentServer } = useStore()
     const { handleMessage, reconnect } = useWebSocketStore()
     const { server, channel } = useParams()
+    const [setting, setSetting] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -193,17 +195,32 @@ export default function Pannel() {
 
     return (
         <div className={styles.pannel}>
-
             <div className={styles.servername}>
-                {currentServer.name}
-            </div>
-            <NewChannel />
-            <div className={styles.channelbox}>
-                <div className={styles.channelscroll}>
-                    {channelList.map(channel =>
-                        <ChannelLine key={channel.id} server={currentServer} channel={channel} />
-                    )}
+                <div className={styles.configbtnbox}>
+                    <span>
+                        {currentServer.name}
+                    </span>
+                    <button className={styles.configbtn} onClick={() => setSetting(state => !state)}>
+                        {setting ? <svg className={styles.icon} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="17px" width="17px" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="18" y1="6" x2="6" y2="18">
+                            </line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg> : <svg className={styles.icon} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 30 30" strokeLinecap="round" strokeLinejoin="round" height="17px" width="17px" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="5 10 15 20 25 10"></polyline>
+                        </svg>}
+                    </button>
                 </div>
+            </div>
+            <div className={styles.ground}>
+                <NewChannel />
+                <div className={styles.channelbox}>
+                    <div className={styles.channelscroll}>
+                        {channelList.map(channel =>
+                            <ChannelLine key={channel.id} server={currentServer} channel={channel} />
+                        )}
+                    </div>
+                </div>
+                {setting && <ServerSetting />}
             </div>
         </div>
     )

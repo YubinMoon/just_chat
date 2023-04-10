@@ -52,7 +52,6 @@ async def get_user_list(db: AsyncSession, offset: int, limit: int) -> list[User]
 
 
 async def get_user_from_name(db: AsyncSession, username: str) -> Union[User, None]:
-    print(username)
     stmt = select(User).where(User.username == username)
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
@@ -65,7 +64,7 @@ async def get_user_from_token(token: str = Depends(oauth2_scheme),
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-    except JWTError:
+    except JWTError as e:
         raise credentials_exception
     else:
         user = await get_user_from_name(db, username=username)

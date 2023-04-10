@@ -20,7 +20,7 @@ Base = declarative_base()
 # Async database
 SQLALCHEMY_DATABASE_URL_ASYNC = config('SQLALCHEMY_DATABASE_URL_ASYNC')
 async_engine = create_async_engine(
-    SQLALCHEMY_DATABASE_URL_ASYNC, echo=True, future=True)
+    SQLALCHEMY_DATABASE_URL_ASYNC, echo=False, future=True)
 
 async_session = sessionmaker(
     async_engine, expire_on_commit=False, class_=AsyncSession)

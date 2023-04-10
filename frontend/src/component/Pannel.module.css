@@ -6,10 +6,32 @@
 }
 
 .servername {
+    position: relative;
+    display: flex;
     color: white;
     padding: 12px 16px;
     font-weight: 500;
     height: 24;
+}
+
+.configbtnbox{
+    position: relative;
+    display: flex;
+    width: 100%;
+}
+
+.configbtn {
+    position: absolute;
+    right: 0;
+    display: flex;
+    border: 0;
+    background-color: transparent;
+    color: white;
+    padding: 0;
+}
+
+.ground{
+    position: relative;
 }
 
 .newchattextbox {

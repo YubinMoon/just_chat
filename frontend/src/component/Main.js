@@ -7,13 +7,16 @@ import fastapi from '../lib/api'
 import ServerPannel from './ServerPannel'
 import ChatArea from './ChatArea';
 import Pannel from './Pannel';
+import useWebSocketStore from '../lib/websocketStore';
 
 
 export default function Main() {
     const { serverList, channelList, getNewServerList, getNewChannelList } = useStore(state => state)
+    const { connect } = useWebSocketStore()
     const { server, channel } = useParams()
     useEffect(() => {
         getNewServerList()
+        connect()
     }, [])
     const s = serverList.find(e => e.id === Number(server))
     const c = channelList.find(e => e.id === Number(channel))
