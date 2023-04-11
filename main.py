@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import FileResponse
+from starlette.staticfiles import StaticFiles
 
 from domain.user import user_router
 from domain.server import server_router
@@ -9,7 +11,7 @@ from domain.message import message_router
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000",  # React
+    "*"
 ]
 
 app.add_middleware(

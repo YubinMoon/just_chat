@@ -1,5 +1,6 @@
 from typing import Union
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from domain.message.message_schema import BaseMessage
 from models import User, Channel, Message
@@ -7,9 +8,10 @@ from datetime import datetime
 
 
 async def create_message(db: AsyncSession, data: BaseMessage, user: User) -> Message:
+    new_user = await db.merge(user)
     message = Message(
         channel_id=data.channel_id,
-        user=user,
+        user=new_user,
         content_type=data.content_type,
         content=data.content,
         create_date=datetime.now()
@@ -26,9 +28,10 @@ async def get_message_by_id(db: AsyncSession, message_id: int) -> Union[Message,
     return message
 
 
-async def get_message_list(db: AsyncSession, offset: int, limit: int, channel: Channel) -> Union[list[Message], None]:
-    stmt = select(Message).join(Channel).where(
-        Channel.id == channel.id).offset(offset).limit(limit)
+async def get_message_list(db: AsyncSession, offset: int, limit: int, channel: Channel) -> list[Message]:
+    stmt = select(Message).join(Channel).options(
+        selectinload(Message.user)
+    ).where(Channel.id == channel.id).offset(offset).limit(limit)
     result = await db.execute(stmt)
     message_list = result.scalars().all()
     return message_list

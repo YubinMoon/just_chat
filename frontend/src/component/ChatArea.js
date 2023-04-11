@@ -65,6 +65,7 @@ export default function ChatArea() {
         fastapi("get", "/api/message/list", params)
             .then(e => {
                 const list = sortByCreateDate(e.message_list)
+                console.log(list)
                 setMessages(list)
             })
             .catch(
@@ -85,7 +86,6 @@ export default function ChatArea() {
                 if (msg.channel_id === Number(channel)) {
                     const list = sortByCreateDate([...messages, msg])
                     setMessages(list)
-                    console.log(msg.id)
                 }
             }
         }

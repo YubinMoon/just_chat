@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import styles from './Pannel.module.css'
 import fastapi from '../lib/api'
@@ -173,6 +173,20 @@ export default function Pannel() {
     const { server, channel } = useParams()
     const [setting, setSetting] = useState(false)
     const navigate = useNavigate()
+    const dropMenuRef = useRef()
+
+   
+    const settingClick = (e) => {
+        e.stopPropagation();
+        setSetting(state => !state)
+        const handleOutsideClose = (e) => {
+            if (!dropMenuRef.current || !dropMenuRef.current.contains(e.target)) {
+                setSetting(false);
+                document.removeEventListener("click", handleOutsideClose);
+            }
+        };
+        document.addEventListener("click", handleOutsideClose);
+    }
 
     useEffect(() => {
         (async () => {
@@ -193,6 +207,8 @@ export default function Pannel() {
         }
     }, [handleMessage])
 
+
+
     return (
         <div className={styles.pannel}>
             <div className={styles.servername}>
@@ -200,7 +216,7 @@ export default function Pannel() {
                     <span>
                         {currentServer.name}
                     </span>
-                    <button className={styles.configbtn} onClick={() => setSetting(state => !state)}>
+                    <button className={styles.configbtn} onClick={settingClick}>
                         {setting ? <svg className={styles.icon} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="17px" width="17px" xmlns="http://www.w3.org/2000/svg">
                             <line x1="18" y1="6" x2="6" y2="18">
                             </line>
@@ -220,7 +236,9 @@ export default function Pannel() {
                         )}
                     </div>
                 </div>
-                {setting && <ServerSetting />}
+                <div ref={dropMenuRef}>
+                    {setting && <ServerSetting setSetting={setSetting} />}
+                </div>
             </div>
         </div>
     )

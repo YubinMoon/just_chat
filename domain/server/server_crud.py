@@ -37,9 +37,11 @@ async def verify_invite_token(token: str):
 
 
 async def insert_user(db: AsyncSession, user: User, server_id: int):
-    db_serverUser = ServerUser(user=user, server_id=server_id, name=user.nickname)
+    db_serverUser = ServerUser(
+        user=user, server_id=server_id, name=user.nickname)
     db.add(db_serverUser)
     await db.commit()
+
 
 async def create_server(db: AsyncSession, server_create: BaseServer, user: User) -> None:
     db_server = Server(user=user, name=server_create.name,
@@ -88,4 +90,15 @@ async def delete_server(db: AsyncSession, server: Server) -> None:
     for serveruser in serverusers:
         await db.delete(serveruser)
     await db.delete(server)
+    await db.commit()
+
+
+async def leave_server(db: AsyncSession, server: Server, user: User) -> None:
+    stmt = select(ServerUser).where(ServerUser.server_id ==
+                                    server.id).where(ServerUser.user_id == user.id)
+    result = await db.execute(stmt)
+    serveruser = result.scalar_one_or_none()
+    if not serveruser:
+        return
+    await db.delete(serveruser)
     await db.commit()

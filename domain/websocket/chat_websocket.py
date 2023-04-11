@@ -77,10 +77,10 @@ class ConnectionManager:
         try:
             message_data = InputData(**data)
             if message_data.text_message:
-                message: TextMessage = message_data.text_message
-                server = await get_server_by_channel_id(db=self.db, channel_id=message.channel_id)
+                get_message: TextMessage = message_data.text_message
+                server = await get_server_by_channel_id(db=self.db, channel_id=get_message.channel_id)
                 res_msg = await self.process_text_message(
-                    message=message, user=user, websocket=websocket)
+                    message=get_message, user=user, websocket=websocket)
                 await self.server_broadcast(message=res_msg, server_id=server.id)
             if message_data.channel_config:
                 config: ChannelConfig = message_data.channel_config

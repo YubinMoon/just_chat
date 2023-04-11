@@ -69,7 +69,6 @@ async def get_messages(
         limit=limit,
         channel=channel
     )
-
     result = message_schema.MessageList(
         total=len(message_list), message_list=message_list)
     return result

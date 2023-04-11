@@ -31,7 +31,9 @@ async def create_invite_token(
     _user: User = Depends(get_user_from_token)
 ):
     _server = await server_crud.get_server_by_id(db=db, server_id=server_id)
-    if not _server or _user.id != _server.user_id:
+    _server_list = await server_crud.get_server_list(db=db, user=_user)
+
+    if _server not in _server_list:
         raise credentials_exception
     invite_token = await server_crud.create_invite_token(server_id=server_id)
     return {"invite_token": invite_token}
@@ -114,3 +116,23 @@ async def server_delete(
     if not _server or _user.id != _server.user_id:
         raise credentials_exception
     await server_crud.delete_server(db=db, server=_server)
+
+
+@router.delete(
+    "/leave/{server_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="leave from server",
+)
+async def server_leave(
+    server_id: int = Path(title="server id"),
+    db: AsyncSession = Depends(get_async_db),
+    _user: User = Depends(get_user_from_token),
+):
+    _server = await server_crud.get_server_by_id(db=db, server_id=server_id)
+    _server_list = await server_crud.get_server_list(db=db, user=_user)
+    if _server not in _server_list:
+        raise credentials_exception
+    if _server.user_id == _user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="서버장은 떠날 수 없습니다.")
+    await server_crud.leave_server(db=db, server=_server, user=_user)
