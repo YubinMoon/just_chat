@@ -1,4 +1,8 @@
-html{
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
   width: 100%;
   height: 100%;
 }
