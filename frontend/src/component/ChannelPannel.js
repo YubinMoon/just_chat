@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
-import styles from './Pannel.module.css'
-import fastapi from '../lib/api'
 import ErrorBox, { handleError, errorMessage } from './ErrorBox';
 import ServerSetting from './ServerSetting';
 import useStore from '../lib/store';
 import useWebSocketStore from '../lib/websocketStore';
+import { Check, Cross, Dropdown, EditPan, TrashCan } from './SVG';
 
-function ChannelLine({ server, channel }) {
+function ChannelLine({ server, channel, checked }) {
     const { sendMessage } = useWebSocketStore()
     const [delbox, setDelbox] = useState(false)
     const navigate = useNavigate()
@@ -37,49 +36,51 @@ function ChannelLine({ server, channel }) {
         sendMessage(params)
     }
 
-    const box1 = (
-        <div className={styles.btnbox}>
-            <button className={styles.btn}>
-                <svg className={styles.icon} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="17px" width="17px" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 20h9"></path>
-                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                </svg>
+    useEffect(() => {
+        setDelbox(false)
+        console.log(checked)
+    }, [checked])
+
+    const Icon = ({ children, onClick }) => {
+        return (
+            <button className="justify-center px-1" onClick={onClick}>
+                <div className='w-4 h-4 stroke-white'>
+                    {children}
+                </div>
             </button>
-            <button className={styles.btn} onClick={checkDelete}>
-                <svg className={styles.icon} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="17px" width="17px" xmlns="http://www.w3.org/2000/svg">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                </svg>
-            </button>
-        </div>
-    )
-    const box2 = (
-        <div className={styles.btnbox} onClick={conformDelete}>
-            <button className={styles.btn}>
-                <svg className={styles.icon} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="17px" width="17px" xmlns="http://www.w3.org/2000/svg">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            </button>
-            <button className={styles.btn} onClick={cancelDelete}>
-                <svg className={styles.icon} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="17px" width="17px" xmlns="http://www.w3.org/2000/svg">
-                    <line x1="18" y1="6" x2="6" y2="18">
-                    </line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
-        </div>
-    )
+        )
+    }
+
     return (
-        <div className={styles.channel} onClick={() => {
+        <div className={`${checked?"bg-neutral-600":"hover:bg-neutral-700"} py-1 rounded-md `} onClick={() => {
             navigate("/" + server.id + "/" + channel.id)
         }}>
-            <div className={styles.channelname}>
-                <span className={styles.text}>
+            <div className="flex justify-between">
+                <span className="text-white text-lg px-2 flex-initial truncate">
                     {channel.name}
                 </span>
-                {delbox ? box2 : box1}
+                <div className={`${checked?"":"hidden"}  flex`}>
+                    {delbox
+                        ?
+                        <>
+                            <Icon onClick={conformDelete}>
+                                <Check />
+                            </Icon>
+                            <Icon onClick={cancelDelete}>
+                                <Cross />
+                            </Icon>
+                        </>
+                        :
+                        <>
+                            <Icon>
+                                <EditPan />
+                            </Icon>
+                            <Icon onClick={checkDelete}>
+                                <TrashCan />
+                            </Icon>
+                        </>
+                    }
+                </div>
             </div>
         </div>
     )
@@ -138,27 +139,30 @@ function NewChannel() {
     }
 
     return (
-        <div
+        <div className='relative group'
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <div className={`${styles.hiddencontent} ${isHovered ? styles.visible : ""}`} >
-                <form className={styles.form} onSubmit={e => {
+            <div className={`transition-all overflow-hidden h-0 group-hover:h-20`} >
+                <form className="mx-3" onSubmit={e => {
                     e.preventDefault()
                     createChannel()
                 }}>
-                    <div className={styles.label}>
-                        <label>채널 이름</label>
+                    <div className="text-white text-base pb-2">
+                        <span className='text-red-500'>*</span>
+                        <span>채널 이름</span>
                     </div>
-                    <input type="text" value={newName} onChange={e => {
+                    <input className='w-full bg-neutral-600 outline-none p-3 rounded-lg text-white font-bold' type="text" value={newName} onChange={e => {
                         setNewName(e.target.value)
                     }} />
                 </form >
             </div>
-            <div className={`${styles.newchattextbox}`}
+            <div className="border-2 m-3 rounded-lg border-neutral-400"
                 onClick={createChannel}>
-                <div className={styles.newchattext}>
-                    New chat
+                <div className="p-3">
+                    <span className='text-white font-medium'>
+                        New chat
+                    </span>
                 </div>
             </div>
             <ErrorBox error={errorMessage} />
@@ -167,7 +171,7 @@ function NewChannel() {
 }
 
 
-export default function Pannel() {
+export default function ChannelPannel() {
     const { serverList, channelList, currentServer, getNewChannelList, getCurrentServer } = useStore()
     const { handleMessage, reconnect } = useWebSocketStore()
     const { server, channel } = useParams()
@@ -175,7 +179,6 @@ export default function Pannel() {
     const navigate = useNavigate()
     const dropMenuRef = useRef()
 
-   
     const settingClick = (e) => {
         e.stopPropagation();
         setSetting(state => !state)
@@ -189,15 +192,6 @@ export default function Pannel() {
     }
 
     useEffect(() => {
-        (async () => {
-            getCurrentServer(server);
-            const newChannelList = await getNewChannelList(server);
-            if (newChannelList.length > 0) {
-                navigate("/" + server + "/" + newChannelList[0].id);
-            }
-        })();
-    }, [server])
-    useEffect(() => {
         const status = handleMessage.status
         if (status) {
             if (status.endsWith("Channel")) {
@@ -206,33 +200,30 @@ export default function Pannel() {
             }
         }
     }, [handleMessage])
-
-
+    console.log(channelList)
 
     return (
-        <div className={styles.pannel}>
-            <div className={styles.servername}>
-                <div className={styles.configbtnbox}>
-                    <span>
+        <div className="bg-neutral-800 w-60 flex flex-col">
+            <div className="flex-none transition-colors duration-100 h-14 p-3 hover:bg-zinc-700 border-b border-black" onClick={settingClick}>
+                <div className="flex justify-between w-full">
+                    <span className='text-white text-xl my-auto'>
                         {currentServer.name}
                     </span>
-                    <button className={styles.configbtn} onClick={settingClick}>
-                        {setting ? <svg className={styles.icon} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="17px" width="17px" xmlns="http://www.w3.org/2000/svg">
-                            <line x1="18" y1="6" x2="6" y2="18">
-                            </line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg> : <svg className={styles.icon} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 30 30" strokeLinecap="round" strokeLinejoin="round" height="17px" width="17px" xmlns="http://www.w3.org/2000/svg">
-                            <polyline points="5 10 15 20 25 10"></polyline>
-                        </svg>}
-                    </button>
+                    <div className='flex'>
+                        <div className='w-5 h-5 stroke-white m-auto'>
+                            {setting ? <Cross /> : <Dropdown />}
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div className={styles.ground}>
+            <div className='flex-initial pt-3'>
                 <NewChannel />
-                <div className={styles.channelbox}>
-                    <div className={styles.channelscroll}>
-                        {channelList.map(channel =>
-                            <ChannelLine key={channel.id} server={currentServer} channel={channel} />
+            </div>
+            <div className="relative flex-1 overflow-scroll scrollbar-none">
+                <div className="border-t border- mt-2 mx-3">
+                    <div className="mt-2">
+                        {channelList.map(c =>
+                            <ChannelLine key={c.id} server={currentServer} channel={c} checked={c.id === Number(channel)} />
                         )}
                     </div>
                 </div>

@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 function App() {
   return (
     <BrowserRouter>
-      <div className={styles.App}>
+      <div className="h-full font-ko">
         <Routes>
           <Route path="/*">
             <Route path="" element={<Home />} />

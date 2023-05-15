@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import { Outlet, json, useNavigate, useParams } from 'react-router-dom';
 import styles from './ChatArea.module.css'
 import fastapi from '../lib/api'
@@ -7,7 +7,6 @@ import useStore from '../lib/store';
 import useWebSocketStore from '../lib/websocketStore';
 
 function MessageLine({ message }) {
-
     return (
         <div className={styles.messageline}>
             <div className={styles.messagebox}>
@@ -37,6 +36,7 @@ export default function ChatArea() {
     const [inputValue, setInputValue] = useState('');
     const messagesRef = useRef(null);
     const socketRef = useRef(null);
+    const textarea = useRef(null)
     const token = localStorage.getItem('login-token')
 
     const sortByCreateDate = (list) => {
@@ -74,9 +74,9 @@ export default function ChatArea() {
         setInputValue('');
     }, [channel])
 
-    useEffect(() => {
-        messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-    }, [messages])
+    // useEffect(() => {
+    //     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    // }, [messages])
 
     useEffect(() => {
         const status = handleMessage.status
@@ -93,6 +93,8 @@ export default function ChatArea() {
 
     function handleInputChange(event) {
         setInputValue(event.target.value);
+        textarea.current.style.height = "0";
+        textarea.current.style.height = textarea.current.scrollHeight + 'px';
     }
 
     function handleEnter(event) {
@@ -109,24 +111,38 @@ export default function ChatArea() {
             setInputValue('');
         }
     }
+
     return (
-        <div className={styles.mainbox}>
-            <div className={styles.chatline} ref={messagesRef}>
-                <div className={styles.chatbox}>
-                    {messages.map(msg => <MessageLine key={msg.id} message={msg} />)}
-                </div>
+        <div className="flex flex-col w-full items-center bg-inherit">
+            <div className='h-14 w-full border-b border-zinc-800'>
+                top area
             </div>
-            <form className={styles.inputbox1}>
-                <div className={styles.inputbox2}>
-                    <div className={styles.inputbox3}>
-                        <textarea className={styles.inputtext}
-                            placeholder='#input area'
-                            value={inputValue}
-                            onChange={handleInputChange}
-                            onKeyDown={handleEnter} />
+            <div className='flex  w-full h-full'>
+                <div className='flex flex-col flex-auto'>
+                    <div className="relative flex flex-col-reverse flex-auto overflow-auto">
+                        <div className="">
+                            {messages.map(msg => <MessageLine key={msg.id} message={msg} />)}
+                        </div>
+                    </div>
+                    <div className='w-11/12 m-auto'>
+                        <form className="w-full flex-1 pb-5 ">
+                            <div className="">
+                                <div className="flex bg-neutral-600 rounded-lg items-center p-3">
+                                    <textarea className="bg-transparent resize-none text-white border-none w-full max-h-32"
+                                        placeholder='#input area'
+                                        ref={textarea}
+                                        value={inputValue}
+                                        onChange={handleInputChange}
+                                        onKeyDown={handleEnter} />
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </form>
+                <div className='bg-neutral-800 w-60 flex-none'>
+                    sidebar
+                </div>
+            </div>
         </div>
     )
 }

@@ -3,6 +3,7 @@ import { devtools } from 'zustand/middleware'
 
 const store = (set, get) => ({
     socket: null,
+    handleMessage: {},
     connect: async () => {
         const token = localStorage.getItem('login-token')
         const socket = new WebSocket(process.env.REACT_APP_WS_SERVER_URL + `/api/message/ws?token=${token}`);
@@ -47,7 +48,6 @@ const store = (set, get) => ({
             get().socket.send(JSON.stringify(data));
         }
     },
-    handleMessage: {},
     setHandleMessage: (handleMessage) => set({ handleMessage }),
 })
 
