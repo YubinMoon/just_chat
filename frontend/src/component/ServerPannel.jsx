@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import fastapi from '../lib/api'
-import { Outlet, useNavigate, useRoutes, useParams } from 'react-router-dom';
+import React from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
 import useStore from '../lib/store';
-import { RightConsoleTransparent, Cross, Plus } from './SVG';
+import { RightConsoleTransparent, Plus } from './SVG';
 
 const ServerCreate = ({ }) => {
     return (

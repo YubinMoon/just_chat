@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
-import { Outlet, json, useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react'
+import { useParams } from 'react-router-dom';
 import fastapi from '../lib/api'
-import ErrorBox, { handleError, errorMessage } from './ErrorBox';
 import useStore from '../lib/store';
 import useWebSocketStore from '../lib/websocketStore';
-import { Cross, LeftConsole, LeftConsoleTransparent, Plus } from './SVG';
+import { LeftConsole, Plus } from './SVG';
 
 function MsgLineType1({ message }) {
     return (

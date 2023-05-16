@@ -1,7 +1,7 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import fastapi from '../lib/api'
 import styles from './ServerSetting.module.css'
-import { Outlet, useNavigate, useRoutes, useParams } from 'react-router-dom';
+import {  useNavigate, useParams } from 'react-router-dom';
 import useStore from '../lib/store';
 
 const SettingBox = ({ title, onClick }) => {

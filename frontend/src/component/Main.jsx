@@ -1,26 +1,21 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react'
-import { Outlet, useParams } from 'react-router-dom';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react'
+import { useParams } from 'react-router-dom';
 import useStore from '../lib/store';
-import styles from './Main.module.css'
-import fastapi from '../lib/api'
-import ServerPannel from './ServerPannel'
 import ChatArea from './ChatArea';
-import ChannelPannel from './ChannelPannel';
 import useWebSocketStore from '../lib/websocketStore';
 import SidePannel from './SidePannel';
 import { useNavigate } from 'react-router-dom';
 
 export default function Main() {
-    const { serverList, currentServer, channelList, getNewServerList, getNewChannelList, getCurrentServer } = useStore(state => state)
+    const { serverList, currentServer, channelByServer, channelList, getNewServerList, getNewChannelList, getCurrentServer } = useStore(state => state)
     const { connect } = useWebSocketStore()
     const navigate = useNavigate()
     const { server, channel } = useParams()
     const lastAccess = JSON.parse(window.localStorage.getItem("lastAccess"))
 
     useEffect(() => {
-        connect()
-        getNewServerList()
+        connect() // websocket connect
+        getNewServerList() // get serverList
     }, [])
 
     useEffect(() => {
@@ -29,15 +24,19 @@ export default function Main() {
                 navigate(`/${server}/${lastAccess[server]}`)
             }
         }
-        getNewChannelList(server)
+        if (!(server in channelByServer)) {
+            console.log("get")
+            getNewChannelList(server)
+        }
     }, [server])
 
     useEffect(() => {
-        if (server && !channel && channelList.length) {
-            const channel_id = channelList[0].id
+        console.log(channelByServer)
+        if (server && !channel && server in channelByServer) {
+            const channel_id = channelByServer[server][0].id
             navigate(`/${server}/${channel_id}`)
         }
-    }, [channelList])
+    }, [channelByServer, channel])
 
     useEffect(() => {
         getCurrentServer(server)
@@ -46,7 +45,7 @@ export default function Main() {
     return (
         <div className="relative flex h-full w-full bg-neutral-700">
             <SidePannel />
-            {channel && <ChatArea />}
+            <ChatArea />
         </div>
     )
 }

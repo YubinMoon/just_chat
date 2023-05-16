@@ -7,21 +7,9 @@ const store = (set, get) => ({
     serverList: [],
     channelList: [],
     currentServer: {},
+    channelByServer: {},
+    messageByServer: {},
 
-    getServerData: async (server_id) => {
-        await fastapi("get", "/api/server/list", {}).then(response => {
-            set({ serverList: response.server_list });
-        }).catch(e => {
-            console.debug(e)
-        })
-        if (server_id) {
-            await fastapi("get", "/api/channel/list/" + server_id, {}).then(response => {
-                set({ channelList: response })
-            }).catch(e => {
-                console.debug(e)
-            })
-        }
-    },
     getNewServerList: async () => {
         try {
             const response = await fastapi("get", "/api/server/list", {});
@@ -30,17 +18,22 @@ const store = (set, get) => ({
             console.debug(e);
         }
     },
+
     getNewChannelList: async (server_id) => {
         if (!server_id)
             return;
         try {
             const response = await fastapi("get", "/api/channel/list/" + server_id, {});
+            let data = get().channelByServer
+            data[server_id] = response
             set({ channelList: response });
+            set({ channelByServer: data})
             return response
         } catch (e) {
             console.debug(e);
         }
     },
+
     getCurrentServer: (server_id) => {
         const serverList = get().serverList
         set(state => { return { currentServer: state.serverList.find(e => e.id === Number(server_id)) } })

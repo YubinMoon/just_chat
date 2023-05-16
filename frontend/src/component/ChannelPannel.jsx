@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
-import ErrorBox, { handleError, errorMessage } from './ErrorBox';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
+import ErrorBox from './ErrorBox';
 import ServerSetting from './ServerSetting';
 import useStore from '../lib/store';
 import useWebSocketStore from '../lib/websocketStore';
@@ -91,7 +91,7 @@ function ChannelLine({ server, channel, checked }) {
     )
 }
 
-function NewChannel() {
+function NewChannel({ nowServer }) {
     const { sendMessage } = useWebSocketStore()
     const { currentServer, getNewChannelList } = useStore()
     const [errorMessage, setErrorMessage] = useState("")
@@ -125,7 +125,7 @@ function NewChannel() {
                     name: newName,
                     description: "",
                     type: "text",
-                    server_id: currentServer.id
+                    server_id: nowServer.id
                 }
             }
         }
@@ -181,6 +181,8 @@ export default function ChannelPannel() {
     const { handleMessage, reconnect } = useWebSocketStore()
     const { server, channel } = useParams()
     const [setting, setSetting] = useState(false)
+    const [nowServer, setNowServer] = useState(null)
+    const [serverName, setServerName] = useState("")
     const navigate = useNavigate()
     const dropMenuRef = useRef()
 
@@ -195,6 +197,13 @@ export default function ChannelPannel() {
         };
         document.addEventListener("click", handleOutsideClose);
     }
+
+    useLayoutEffect(() => {
+        const now = serverList.find(e => e.id === Number(server))
+        if (now)
+            setServerName(now.name)
+        setNowServer(now)
+    }, [serverList])
 
     useEffect(() => {
         const status = handleMessage.status
@@ -211,7 +220,7 @@ export default function ChannelPannel() {
             <div className="flex-none transition-colors duration-100 h-14 p-3 hover:bg-zinc-700 border-b border-black" onClick={settingClick}>
                 <div className="flex justify-between w-full">
                     <span className='text-white text-xl my-auto'>
-                        {currentServer.name}
+                        {serverName}
                     </span>
                     <div className='flex'>
                         <div className='w-5 h-5 stroke-white m-auto'>
@@ -228,7 +237,7 @@ export default function ChannelPannel() {
                     <div className="border-t border- mt-2 mx-3">
                         <div className="mt-2">
                             {channelList.map(c =>
-                                <ChannelLine key={c.id} server={currentServer} channel={c} checked={c.id === Number(channel)} />
+                                <ChannelLine key={c.id} server={nowServer} channel={c} checked={c.id === Number(channel)} />
                             )}
                         </div>
                     </div>
