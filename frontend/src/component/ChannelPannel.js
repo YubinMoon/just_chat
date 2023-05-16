@@ -38,7 +38,6 @@ function ChannelLine({ server, channel, checked }) {
 
     useEffect(() => {
         setDelbox(false)
-        console.log(checked)
     }, [checked])
 
     const Icon = ({ children, onClick }) => {
@@ -52,14 +51,20 @@ function ChannelLine({ server, channel, checked }) {
     }
 
     return (
-        <div className={`${checked?"bg-neutral-600":"hover:bg-neutral-700"} py-1 rounded-md `} onClick={() => {
+        <div className={`${checked ? "bg-neutral-600" : "hover:bg-neutral-700"} py-1 rounded-md `} onClick={() => {
+            let lastAccess = JSON.parse(window.localStorage.getItem("lastAccess"))
+            if (!lastAccess) {
+                lastAccess = {}
+            }
+            lastAccess[server.id] = channel.id
+            window.localStorage.setItem("lastAccess", JSON.stringify(lastAccess))
             navigate("/" + server.id + "/" + channel.id)
         }}>
             <div className="flex justify-between">
                 <span className="text-white text-lg px-2 flex-initial truncate">
                     {channel.name}
                 </span>
-                <div className={`${checked?"":"hidden"}  flex`}>
+                <div className={`${checked ? "" : "hidden"}  flex`}>
                     {delbox
                         ?
                         <>
@@ -200,7 +205,6 @@ export default function ChannelPannel() {
             }
         }
     }, [handleMessage])
-    console.log(channelList)
 
     return (
         <div className="bg-neutral-800 w-60 flex flex-col">
@@ -216,15 +220,17 @@ export default function ChannelPannel() {
                     </div>
                 </div>
             </div>
-            <div className='flex-initial pt-3'>
-                <NewChannel />
-            </div>
-            <div className="relative flex-1 overflow-scroll scrollbar-none">
-                <div className="border-t border- mt-2 mx-3">
-                    <div className="mt-2">
-                        {channelList.map(c =>
-                            <ChannelLine key={c.id} server={currentServer} channel={c} checked={c.id === Number(channel)} />
-                        )}
+            <div className='relative'>
+                <div className='flex-initial pt-3'>
+                    <NewChannel />
+                </div>
+                <div className="relative flex-1 overflow-scroll scrollbar-none">
+                    <div className="border-t border- mt-2 mx-3">
+                        <div className="mt-2">
+                            {channelList.map(c =>
+                                <ChannelLine key={c.id} server={currentServer} channel={c} checked={c.id === Number(channel)} />
+                            )}
+                        </div>
                     </div>
                 </div>
                 <div ref={dropMenuRef}>

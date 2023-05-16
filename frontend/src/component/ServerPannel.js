@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
+import fastapi from '../lib/api'
 import { Outlet, useNavigate, useRoutes, useParams } from 'react-router-dom';
 import useStore from '../lib/store';
-import { RightConsoleTransparent, Cross } from './SVG';
+import { RightConsoleTransparent, Cross, Plus } from './SVG';
 
 const ServerCreate = ({ }) => {
     return (
         <div className="flex relative mb-2">
-            <div className={"rounded-3xl transition-all hover:rounded-2xl hover:bg-violet-800 flex m-auto justify-center items-center w-14 h-14 bg-neutral-700 mx-1.5 group"}>
+            <div className={"rounded-[28px] transition-all hover:rounded-2xl hover:bg-violet-800 flex m-auto justify-center items-center w-14 h-14 bg-neutral-700 mx-1.5 group"}>
                 <div className="relative w-7 h-7 stroke-green-600 transition-all group-hover:stroke-white">
-                    <Cross />
+                    <Plus />
                 </div>
             </div>
         </div>
@@ -21,7 +22,7 @@ const ServerBox = ({ children, selected, onClick, backImage }) => {
             <div className={'flex flex-col absolute h-full justify-center'}>
                 <div className={`opacity-0 ${selected ? "w-1 h-10 opacity-100" : "w-0 h-0 group-hover:h-5 group-hover:w-1 group-hover:opacity-100"} bg-white transition-all rounded-r-sm`} />
             </div>
-            <div className={(selected ? "rounded-2xl" : "rounded-3xl transition-all hover:rounded-2xl hover:bg-emerald-700") + " flex m-auto justify-center items-center w-14 h-14 bg-neutral-700 mx-1.5"} onClick={onClick}>
+            <div className={(selected ? "rounded-2xl" : "rounded-[28px] transition-all hover:rounded-2xl hover:bg-emerald-700") + " flex m-auto justify-center items-center w-14 h-14 bg-neutral-700 mx-1.5"} onClick={onClick}>
                 {children}
             </div>
         </div>

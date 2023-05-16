@@ -1,23 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import fastapi from '../lib/api'
 import styles from './ServerSetting.module.css'
 import { Outlet, useNavigate, useRoutes, useParams } from 'react-router-dom';
 import useStore from '../lib/store';
 
-const Divide = () => {
-    return (
-        <div>
-
-        </div>
-    )
-}
-
 const SettingBox = ({ title, onClick }) => {
     return (
-        <li className={styles.line}>
-            <button className={styles.btn} onClick={onClick}>
-                <div className={styles.settingbox}>
-                    <span className={styles.settingtext}>
+        <li className="w-full m-0">
+            <button className="w-full" onClick={onClick}>
+                <div className="relative flex py-1 px-3 rounded-sm hover:bg-[#444654]">
+                    <span className="text-white text-base">
                         {title}
                     </span>
                 </div>
@@ -28,9 +20,13 @@ const SettingBox = ({ title, onClick }) => {
 
 export default function ServerSetting({ setSetting, handleOutsideClose }) {
     const [leave, setLeave] = useState(false)
+    const [set, setSet] = useState(true)
+    const [copyed, setCopyed] = useState(false)
     const { getNewServerList } = useStore()
     const { server, channel } = useParams()
     const navigate = useNavigate()
+
+
     const copyInvite = async () => {
         try {
             const _url = window.location.protocol + "//" + window.location.host + "/invite/"
@@ -48,6 +44,10 @@ export default function ServerSetting({ setSetting, handleOutsideClose }) {
                 try {
                     await window.navigator.clipboard.writeText(joinurl);
                     console.debug('초대 링크가 클립보드에 복사되었습니다.');
+                    setCopyed(true)
+                    return setTimeout(() => {
+                        setSetting(false)
+                    }, 1000)
                 } catch (err) {
                     console.error('복사하는 동안 에러가 발생했습니다:');
                     console.error(err);
@@ -66,6 +66,7 @@ export default function ServerSetting({ setSetting, handleOutsideClose }) {
         }
         setSetting(false)
     }
+
     const leaveServerConform = async (e) => {
         e.stopPropagation();
         setSetting(false)
@@ -83,21 +84,28 @@ export default function ServerSetting({ setSetting, handleOutsideClose }) {
         }
     }
 
-    const leaveServer = () => {
-        setLeave(true)
-    }
     const backgroundClick = (e) => {
         e.stopPropagation();
         setSetting(false)
     }
 
+    useEffect(() => {
+        setSet(false)
+    }, [])
 
     return (
-        <div className={styles.pannel}>
-            <ul className={styles.list}>
-                <SettingBox title={"서버 초대하기"} onClick={copyInvite} />
-                <SettingBox title={"서버 탈퇴하기"} onClick={leaveServer} />
-            </ul>
+        <div className={`absolute top-0 w-full`}>
+            <div className={`${set ? "scale-0 opacity-20" : "scale-100 opacity-100"} transition-all relative m-3 origin-top`}>
+                <ul className={`${copyed ? "hidden" : ""} bg-neutral-900 items-start rounded-md p-1`}>
+                    <SettingBox title={"서버 초대하기"} onClick={copyInvite} />
+                    <SettingBox title={"서버 탈퇴하기"} onClick={() => { setLeave(true) }} />
+                </ul>
+                <div className={`${copyed ? "opacity-100" : "invisible opacity-0"} absolute top-0 w-full transition-all`}>
+                    <div className='bg-green-600 w-full p-1 rounded-md text-center'>
+                        <span className='font-bold text-white text-lg'>링크 복사됨</span>
+                    </div>
+                </div>
+            </div>
             {leave && <div className={styles.modalbox} onClick={backgroundClick}>
                 <div className={styles.modal} onClick={e => e.stopPropagation()}>
                     <div className={styles.modeltitle}>
@@ -111,7 +119,7 @@ export default function ServerSetting({ setSetting, handleOutsideClose }) {
                         </span>
                     </div>
                     <div className={styles.modalbtnarea}>
-                        <button className={styles.modelbtn1} onClick={() => setLeave(state => false)}>
+                        <button className={styles.modelbtn1} onClick={() => setLeave(false)}>
                             <span>취소</span>
                         </button>
                         <button className={styles.modelbtn2} onClick={leaveServerConform}>

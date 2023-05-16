@@ -9,7 +9,7 @@ const store = (set, get) => ({
         const socket = new WebSocket(process.env.REACT_APP_WS_SERVER_URL + `/api/message/ws?token=${token}`);
 
         socket.onopen = () => {
-            console.log('WebSocket connected');
+            console.debug('WebSocket connected');
             set({ socket });
         };
 
@@ -19,7 +19,7 @@ const store = (set, get) => ({
         };
 
         socket.onclose = () => {
-            console.log('WebSocket closed');
+            console.debug('WebSocket closed');
             set({ socket: null })
             // 연결이 닫히면 3초 후에 다시 시도합니다.
             setTimeout(() => {

@@ -27,3 +27,27 @@ code {
 #root {
   height: 100%;
 }
+
+
+.scrollbar-chat {
+  @apply scrollbar-track-zinc-800 scrollbar-thumb-neutral-900;
+}
+
+.scrollbar-chat::-webkit-scrollbar {
+  width: 20px;
+}
+
+.scrollbar-chat::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-track);
+  border-radius: var(--scrollbar-track-radius);
+  background-clip: padding-box;
+  border: 6px solid transparent;
+  margin-bottom: 8px;
+}
+
+.scrollbar-chat::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: var(--scrollbar-thumb-radius);
+  background-clip: padding-box;
+  border: 6px solid transparent;
+}
