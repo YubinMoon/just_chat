@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom';
 import useStore from '../lib/store';
 import ChatArea from './ChatArea';
 import useWebSocketStore from '../lib/websocketStore';
-import SidePannel from './SidePannel';
 import { useNavigate } from 'react-router-dom';
+import ServerPannel from './ServerPannel'
+import ChannelPannel from './ChannelPannel'
 
 export default function Main() {
     const { serverList, currentServer, channelByServer, channelList, getNewServerList, getNewChannelList, getCurrentServer } = useStore(state => state)
@@ -44,7 +45,10 @@ export default function Main() {
 
     return (
         <div className="relative flex h-full w-full bg-neutral-700">
-            <SidePannel />
+            <div className="flex">
+                <ServerPannel />
+                <ChannelPannel />
+            </div>
             <ChatArea />
         </div>
     )

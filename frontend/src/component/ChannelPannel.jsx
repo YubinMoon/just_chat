@@ -210,7 +210,7 @@ export default function ChannelPannel() {
         if (status) {
             if (status.endsWith("Channel")) {
                 reconnect()
-                getNewChannelList(server)
+                getNewChannelList(server) 
             }
         }
     }, [handleMessage])
