@@ -7,8 +7,9 @@ from domain.user import user_router
 from domain.server import server_router
 from domain.channel import channel_router
 from domain.message import message_router
+from domain.zum import zum_router
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/docs")
 
 origins = [
     "*"
@@ -26,3 +27,4 @@ app.include_router(user_router.router)
 app.include_router(server_router.router)
 app.include_router(channel_router.router)
 app.include_router(message_router.router)
+app.include_router(zum_router.router)
